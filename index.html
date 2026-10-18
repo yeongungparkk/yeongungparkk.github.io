@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Cha Chaan Teng Rush — Kitchen Arcade</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-cell">
+      <span class="lbl">Score</span>
+      <span class="val" id="scoreVal">$0</span>
+    </div>
+    <div class="hud-cell center">
+      <span class="lbl">Time Left</span>
+      <span class="val" id="timeVal">60</span>
+    </div>
+    <div class="hud-cell right">
+      <span class="lbl">High Score</span>
+      <span class="val" id="highVal">$0</span>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <canvas id="game" width="880" height="560"></canvas>
+    <!-- Floating overlays on canvas -->
+    <div class="phase-badge p1 hidden" id="phaseBadge">
+      <div class="pn" id="phaseNum">Phase 1</div>
+      <div class="pt" id="phaseText">Relaxed</div>
+    </div>
+    <button class="mute-btn" id="muteBtn">🔊 BGM</button>
+    <div class="tut-prompt hidden" id="tutPrompt">
+      <div class="step-no" id="tutStepNo">Step 1 / 5</div>
+      <div class="step-txt" id="tutStepText">Walk to the Tea counter and press INTERACT.</div>
+      <div class="progress-dots" id="tutDots"></div>
+      <button class="tut-exit" id="tutExitBtn">Exit Tutorial</button>
+    </div>
+  </div>
+
+  <!-- Mobile / touch controls -->
+  <div class="controls">
+    <div class="dpad" id="dpad">
+      <div class="dbtn up"    data-dir="up">▲</div>
+      <div class="dbtn left"  data-dir="left">◀</div>
+      <div class="dbtn down"  data-dir="down">▼</div>
+      <div class="dbtn right" data-dir="right">▶</div>
+    </div>
+    <div class="right-controls">
+      <button class="sprint-btn" id="sprintBtn">SPRINT</button>
+      <div class="col">
+        <button class="action-btn" id="interactBtn">INTERACT</button>
+        <div class="hint">WASD/Arrows = Move · SHIFT = Run · SPACE/E = Interact</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE SCREEN (neon storefront) -->
+  <div class="overlay title-screen" id="startScreen">
+    <div class="storefront">
+      <div class="awning"></div>
+      <div class="sign neon-flicker">茶餐廳<span class="en">CHA CHAAN TENG RUSH</span></div>
+      <div class="steam"></div>
+      <div class="windows">
+        <div class="win"></div><div class="win"></div><div class="win"></div><div class="win"></div>
+      </div>
+    </div>
+    <h1 class="title-main" style="font-size:26px; margin-bottom:2px;">CHA CHAAN TENG RUSH</h1>
+    <div class="title-sub" style="margin-bottom:16px;">KITCHEN ARCADE · 60s LUNCH RUSH</div>
+    <div class="title-btns">
+      <button class="title-btn-primary" id="playBtn">▶ PLAY GAME</button>
+      <button class="title-btn-secondary" id="playTutBtn">🎓 PLAY TUTORIAL</button>
+      <button class="title-btn-tertiary" id="howToPlayBtn">📖 How to Play / Recipes</button>
+    </div>
+    <div class="hint" style="margin-top:14px; max-width:340px;">
+      Serve HK diner classics — Milk Tea, Pineapple Bun, Satay Noodles, French Toast — before the rush overwhelms you!
+    </div>
+  </div>
+
+  <!-- TUTORIAL MODAL -->
+  <div class="tutorial-modal hidden" id="tutorialModal">
+    <div class="tutorial-card">
+      <h2>HOW TO PLAY</h2>
+      <div class="sub">CHA CHAAN TENG RUSH — KITCHEN GUIDE</div>
+
+      <div class="tut-section">
+        <h3>🎮 Controls</h3>
+        <div class="tut-controls">
+          <kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> — Move chef<br>
+          <kbd>SHIFT</kbd> (hold) — Sprint / Run (2× speed)<br>
+          <kbd>SPACE</kbd> / <kbd>E</kbd> — Interact (Pick up / Place / Serve / Trash)<br>
+          <span style="opacity:0.7;">Mobile:</span> D-Pad to move · SPRINT button to run · INTERACT to act
+        </div>
+      </div>
+
+      <div class="tut-section">
+        <h3>🍳 Recipes (assemble in this order)</h3>
+        <div class="tut-recipes">
+          <div><b>🧋 HK Milk Tea</b>Tea + Evaporated Milk</div>
+          <div><b>🍍 Pineapple Bun</b>Bun + Butter</div>
+          <div><b>🍜 Satay Beef Noodles</b>Instant Noodles + Satay Beef + Egg</div>
+          <div><b>🍞 HK French Toast</b>Toast + Peanut Butter + Syrup</div>
+        </div>
+      </div>
+
+      <div class="tut-section">
+        <h3>👨‍🍳 Workflow</h3>
+        <div class="row">
+          1. Walk to <b>ingredient stations</b> → press <b>INTERACT</b> to pick up. <b>Carry up to 3 ingredients</b> at once!<br>
+          2. Walk to the <b>Assembly Table</b> → press <b>INTERACT</b> to drop ALL carried ingredients onto the tray at once.<br>
+          3. When the tray matches a recipe, it auto-assembles — press <b>INTERACT</b> again to pick up the dish.<br>
+          4. Walk to the <b>Delivery Counter</b> → press <b>INTERACT</b> to serve the matching customer.<br>
+          5. Use the <b>Trash Can</b> (next to the Assembly Table) to discard the top item or clear the tray.
+        </div>
+      </div>
+
+      <div class="tut-section">
+        <h3>💰 Scoring</h3>
+        <div class="row">
+          <span style="color:#4ade80;">✓ Correct dish:</span> <b>+$50</b> + 2s bonus time<br>
+          <span style="color:#ff7b7b;">✗ Wrong dish / patience expired:</span> <b>-$20</b> + screen shake<br>
+          <span style="color:#ffd54a;">60-second shift</span> · final 10s ticks audibly
+        </div>
+      </div>
+
+      <button class="tut-start" id="tutStartBtn">START GAME ▶</button>
+      <button class="tut-secondary" id="tutCloseBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER SCREEN -->
+  <div class="overlay hidden" id="overScreen">
+    <div class="title-sub" id="overSub">SHIFT OVER</div>
+    <div class="rank-badge" id="rankBadge"></div>
+    <div class="final-score" id="finalScore">$0</div>
+    <div style="font-size:12px; opacity:0.6; margin-bottom: 18px;" id="overHigh"></div>
+    <button class="big-btn" id="replayBtn">RESTART GAME ↻</button>
+    <button class="copy-btn" id="copyBtn">📋 Copy Score to Share</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
